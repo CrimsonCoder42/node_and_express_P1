@@ -1,24 +1,40 @@
-// 5:15:51
+const express = require('express'); 
+const app = express(); 
+const { products } = require('./data');
 
-const express = require('express');
-const path = require('path');
-
-
-const app = express();
 const port = 8080;
 
-app.use(express.static('./public'))
 
-
-// app.get('/', (req, res) => {
-//     res.sendFile(path.resolve(__dirname,'./navbar-app/index.html'))
-// })
-
-app.all('*', (req, res) => {
-    res.status(404).send('resource not found')
+app.get('/', (req, res) => {
+    res.send("<h1> Home Page </h1> <a href='/api/products'>products</a>")
 })
+
+app.get('/api/products', (req, res) => {
+    const newProducts = products.map((product) => {
+        const {id, name, image} = product;
+        return {id, name, image}
+    })
+    res.json(newProducts)
+})
+
+app.get('/api/products/:productID', (req, res) => {
+    const {productID} = req.params;
+    console.log(req.params)
+    const singleProduct = products.find((product) => product.id === Number(productID))
+    if (!singleProduct) {
+        return res.status(404).send('Product Does Not Exist')
+    }
+    return res.json(singleProduct);
+})
+
+app.get('/api/products/:productID/reviews/:reviewID', (req,res) => {
+    console.log(req.params);
+    res.send("hello world")
+} )
 
 
 app.listen(port, () => {
-console.log(`listening on localhost:${port}`)
+    console.log(`app running on localhost${port}`)
 })
+
+//5:32:34
